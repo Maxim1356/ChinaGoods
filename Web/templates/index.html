@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mt-3">
+  <div class="col d-flex flex-column justify-content-center gap-3">
+    <div class="text-center">
+      <h1 class="display-4">Товары со всего китая!</h1>
+    </div>
+    <div class="d-flex flex-row d-flex justify-content-center gap-3">
+      <a class="btn btn-dark" href="#">Купить сейчас</a>
+      <a class="btn btn-dark" href="#">Инструкция</a>
+    </div>
+  </div>
+  <div class="col">
+    <img class="img-fluid rounded" src="../static/img/Truck.png" alt="Грузовик едет">
+  </div>
+</div>
+<div class="row">
+  <div class="col text-center">
+    <h2>Команда</h1>
+    <p class="lead">(Описание команды)</p>
+  </div>
+</div>
+<div class="row">
+  <div class="col text-center">
+    <h2>Инструкция</h1>
+    <p class="lead">(Описание инстркуции)</p>
+  </div>
+</div>
+{% endblock %}
