@@ -3,22 +3,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, timedelta
 import sqlite3
 import os
-import requests
-import re
-import json
 from functools import wraps
-
-url = ("https://iss.moex.com/iss/engines/currency/markets/selt/securities.jsonp?"
-       "iss.only=securities,marketdata&"
-       "securities=CETS:CNYRUB_TOM&"
-       "lang=ru&iss.meta=off&iss.json=extended&callback=angular.callbacks._gk")
-data = requests.get(url)
-text = data.text[22:len(data.text) - 1:]
-text = re.sub(r'\n', "", text)
-json_string = json.loads(text)
-for ss in json_string[1]['securities']:
-    pass
-
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 app.config['DATABASE'] = 'database.db'
@@ -462,7 +447,6 @@ class DataInitializer:
         insurance = product_cost * shipping_type['insurance_rate']
 
         total_cost = (
-                product_cost * float(ss['PREVWAPRICE']) +
                 shipping_cost +
                 insurance
         )
@@ -515,190 +499,17 @@ def home():
     return render_template('index.html', shipping_types=shipping_types)
 
 
-
 @app.route('/brands')
 def brands():
-    global all_brands
-    all_brands = [
-        {
-            'name': 'Nike',
-            'logo_url': url_for('static', filename='images/Nike.png'),
-            'description': 'Американский производитель спортивной одежды',
-            'country': 'США',
-            'founded': '1964',
-            'rating': '4.8',
-        },
-        {
-            'name': 'Adidas',
-            'logo_url': url_for('static', filename='images/Adidas.png'),
-            'description': 'Немецкий производитель спортивной одежды',
-            'country': 'Германия',
-            'founded': '1949'
-        },
-        {
-            'name': 'Gucci',
-            'logo_url': url_for('static', filename='images/Gucci.png'),
-            'description': 'Итальянский люксовый бренд одежды и аксессуаров',
-            'country': 'Италия',
-            'founded': '1921',
-            'rating': '4.9',
-        },
-        {
-            'name': 'Puma',
-            'logo_url': url_for('static', filename='images/Puma.png'),
-            'description': 'Немецкий бренд спортивной одежды и обуви',
-            'country': 'Германия',
-            'founded': '1948',
-            'rating': '4.6',
-        },
-        {
-            'name': 'Louis Vuitton',
-            'logo_url': url_for('static', filename='images/Louis-Vuitton.png'),
-            'description': 'Французский люксовый бренд одежды, сумок и аксессуаров',
-            'country': 'Франция',
-            'founded': '1854',
-            'rating': '4.9',
-        },
-        {
-            'name': 'Balenciaga',
-            'logo_url': url_for('static', filename='images/Balenciaga.png'),
-            'description': 'Испанский люксовый бренд модной одежды и обуви',
-            'country': 'Испания',
-            'founded': '1919',
-            "rating": "4.8",
-        },
-        {
-            'name': 'Supreme',
-            'logo_url': url_for('static', filename='images/Supreme.png'),
-            'description': 'Американский уличный бренд одежды и аксессуаров',
-            'country': 'США',
-            'founded': '1994',
-            'rating': '4.7',
-            "premium": True
-        },
-        {
-            'name': 'Off-White',
-            'logo_url': url_for('static', filename='images/Off-White.png'),
-            'description': 'Уличный люксовый бренд с индустриальным дизайном',
-            'country': 'США',
-            'founded': '2012',
-            "rating": "4.6",
-            "premium": True
-        },
-        {'name': 'Chanel',
-         'logo_url': url_for('static', filename='images/Chanel.png'),
-         'description': 'Французский модный дом класса люкс',
-         'country': 'Франция',
-         'founded': '1910',
-         'rating': '5.0',
-         },
-        {
-            'name': 'The North Face',
-            'logo_url': url_for('static', filename='images/The-North-Face.png'),
-            'description': 'Американский бренд одежды для активного отдыха и спорта',
-            'country': 'США',
-            'founded': '1966',
-            "rating": "4.7",
-        },
-        {
-            'name': 'Versace',
-            'logo_url': url_for('static', filename='images/Versace.png'),
-            'description': 'Итальянский люксовый бренд одежды с ярким дизайном',
-            'country': 'Италия',
-            'founded': '1978',
-            'rating': '4.8',
-            "premium": True,
-        },
-        {
-            'name': 'Burberry',
-            'logo_url': url_for('static', filename='images/Burberry.png'),
-            'description': 'Британский бренд классической одежды с клетчатым принтом',
-            'country': 'Великобритания',
-            'founded': '1856',
-            "rating": "4.7",
-            "premium": True,
-
-        },
-        {
-            'name': 'Tommy Hilfiger',
-            'logo_url': url_for('static', filename='images/Tommy-Hilfiger.png'),
-            'description': 'Американский бренд одежды в стиле преppy и casual',
-            'country': 'США',
-            'founded': '1985',
-            'rating': '4.5',
-            "premium": True,
-        },
-        {
-            'name': 'Calvin Klein',
-            'logo_url': url_for('static', filename='images/Calvin-Klein.png'),
-            'description': 'Американский бренд минималистичной одежды и белья',
-            'country': 'США',
-            'founded': '1968',
-            "rating": "4,6",
-        },
-        {
-            'name': 'Lacoste',
-            'logo_url': url_for('static', filename='images/Lacoste.png'),
-            'description': 'Американский производитель спортивной одежды',
-            'country': 'США',
-            'founded': '1964',
-            'rating': '4.8',
-            "premium": True
-        },
-        {
-            'name': 'Armani',
-            'logo_url': url_for('static', filename='images/Armani.png'),
-            'description': 'Итальянский бренд элегантной одежды премиум-класса',
-            'country': 'Италия',
-            'founded': '1933',
-            'rating': '4.4',
-            "premium": True
-        },
-    ]
     return render_template('brands.html', brands=all_brands)
 
-@app.route('/brands/<brand_name>')
-def brand_detail(brand_name):
-    global all_brands
-    brand_ = next((b for b in all_brands if b['name'] == brand_name), None)
-    print(brand_)
-    if not brand_:
         abort(404)
-    return render_template('brand_detail2.html', brand=brand_)
-@app.route('/calculator', methods=['GET', 'POST'])
 def calculator():
     shipping_types = [
         {"name": 'ЖД грузоперевозки', 'base_cost': '500', 'delivery_days_min': '2 недели',
          'delivery_days_max': '3 недели'},
         {"name": 'Авиа перевозки', 'base_cost': '1000', 'delivery_days_min': '3 дня', 'delivery_days_max': '7 дней'},
         {"name": 'По морю', 'base_cost': '300', 'delivery_days_min': '3 недели', 'delivery_days_max': '5 недель'}]
-    if request.method == 'POST':
-        try:
-            weight = int(request.form.get('weight', 0))
-            volume = int(request.form.get('volume', 0))
-            product_cost = int(request.form.get('product_cost', 0))
-            shipping_type_name = request.form.get('shipping_type')
-            shipping_type = next((st for st in shipping_types if st['name'] == shipping_type_name), None)
-            if not shipping_type:
-                flash('Неверный тип доставки', 'danger')
-                return redirect(url_for('calculator'))
-            dimensional_weight = int(round(volume * 167 / 1000))
-            chargeable_weight = max(weight, dimensional_weight)
-            shipping_cost = str(int(shipping_type['base_cost']) + int(round(1.05 * int(chargeable_weight))))
-            total_cost = product_cost * float(ss['PREVWAPRICE']) + int(shipping_cost)
-
-            return render_template('calculator_result.html',
-                                   weight=weight,
-                                   volume=volume,
-                                   product_cost=product_cost,
-                                   shipping_type=shipping_type,
-                                   shipping_cost=round(int(shipping_cost), 2),
-                                   total_cost=round(total_cost, 2),
-                                   exchange_rate=float(ss['PREVWAPRICE']))
-
-        except ValueError as e:
-            flash('Пожалуйста, введите корректные числовые значения', 'danger')
-
     return render_template('calculator_form.html', shipping_types=shipping_types)
 
 
@@ -723,56 +534,6 @@ def login():
         flash('Неверный логин или пароль', 'danger')
 
     return render_template('login.html')
-
-
-BRANDS = [
-    {
-        'id': 1,
-        'name': 'Nike',
-        'slug': 'nike',
-        'logo': 'nike.png',
-        'description': 'Американский производитель спортивной одежды'
-    },
-    {
-        'id': 2,
-        'name': 'Adidas',
-        'slug': 'adidas',
-        'logo': 'adidas.png',
-        'description': 'Немецкий спортивный бренд'
-    }
-]
-
-# Данные о товарах
-PRODUCTS = [
-    {
-        'id': 1,
-        'brand_id': 1,
-        'name': 'Nike Air Max',
-        'slug': 'nike_airmax',
-        'price': 8990,
-        'image': 'nike_airmax.jpg',
-        'description': 'Кроссовки с амортизирующей подошвой'
-    },
-    {
-        'id': 2,
-        'brand_id': 2,
-        'name': 'Adidas Superstar',
-        'slug': 'adidas_superstar',
-        'price': 7990,
-        'image': 'adidas_superstar.jpg',
-        'description': 'Классические кроссовки с ракушкой'
-    }
-]
-
-
-@app.route('/product/<slug>')
-def product(slug):
-    product = next((p for p in PRODUCTS if p['slug'] == slug), None)
-    if not product:
-        return "Товар не найден", 404
-
-    brand = next((b for b in BRANDS if b['id'] == product['brand_id']), None)
-    return render_template('product.html', product=product, brand=brand)
 
 
 @app.route('/register', methods=['GET', 'POST'])
